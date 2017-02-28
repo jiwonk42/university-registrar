@@ -24,6 +24,18 @@ namespace UniversityRegistrar
     }
 
     [Fact]
+    public void Test_Equal_ReturnsTrueIfDescriptionsAreTheSame()
+    {
+      //Arrange, Act
+      Student firstStudent = new Student("Matt Caswell", "04/01/2017");
+      Student secondStudent = new Student("Matt Caswell", "04/01/2017");
+
+
+      //Assert
+      Assert.Equal(firstStudent, secondStudent);
+    }
+
+    [Fact]
     public void Test_Save_AssignsIdToObject()
     {
         //Arrange
@@ -37,6 +49,7 @@ namespace UniversityRegistrar
         int result = savedStudent.GetId();
         int testId = testStudent.GetId();
 
+        //Assert
         Assert.Equal(testId, result);
     }
 

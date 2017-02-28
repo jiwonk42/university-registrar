@@ -17,6 +17,21 @@ namespace UniversityRegistrar
             _date = Date;
         }
 
+        public override bool Equals(System.Object otherStudent)
+        {
+          if (!(otherStudent is Student))
+          {
+            return false;
+          }
+          else
+          {
+            Student newStudent = (Student) otherStudent;
+            bool nameEquality = (this.GetName() == newStudent.GetName());
+            bool dateEquality = (this.GetDate() == newStudent.GetDate());
+            return (nameEquality && dateEquality);
+          }
+        }
+
         public int GetId()
         {
             return _id;
