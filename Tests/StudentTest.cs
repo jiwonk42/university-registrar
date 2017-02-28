@@ -10,7 +10,7 @@ namespace UniversityRegistrar
   {
     public UniversityRegistrarTest()
     {
-      DBConfiguration.ConnectionString = "Data Source=(localdb)\\mssqllocaldb;Initial Catalog=university_registrar;Integrated Security=SSPI;";
+      DBConfiguration.ConnectionString = "Data Source=(localdb)\\mssqllocaldb;Initial Catalog=university_registrar_test;Integrated Security=SSPI;";
     }
 
     [Fact]
@@ -21,6 +21,23 @@ namespace UniversityRegistrar
 
         //Assert
         Assert.Equal(0, result);
+    }
+
+    [Fact]
+    public void Test_Save_AssignsIdToObject()
+    {
+        //Arrange
+        Student testStudent = new Student("Jasper", "07/24/2017");
+
+        //Act
+        testStudent.Save();
+        Student savedStudent = Student.GetAll()[0];
+
+
+        int result = savedStudent.GetId();
+        int testId = testStudent.GetId();
+
+        Assert.Equal(testId, result);
     }
 
     public void Dispose()

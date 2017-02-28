@@ -57,6 +57,8 @@ namespace UniversityRegistrar
                 int studentId = rdr.GetInt32(0);
                 string studentName = rdr.GetString(1);
                 string studentDate = rdr.GetString(2);
+                Student newStudent = new Student(studentName, studentDate, studentId);
+                allStudents.Add(newStudent);
             }
 
             if (rdr != null)
@@ -68,6 +70,33 @@ namespace UniversityRegistrar
                 conn.Close();
             }
             return allStudents;
+        }
+
+        public void Save()
+        {
+            SqlConnection conn = DB.Connection();
+            conn.Open();
+
+            SqlCommand cmd = new SqlCommand("INSERT INTO students (name, date) OUTPUT INSERTED.id VALUES (@StudentName, @StudentDate);", conn);
+
+            cmd.Parameters.Add(new SqlParameter("@StudentName", this.GetName()));
+            cmd.Parameters.Add(new SqlParameter("@StudentDate", this.GetDate()));
+
+            SqlDataReader rdr = cmd.ExecuteReader();
+
+            while(rdr.Read())
+            {
+                this._id = rdr.GetInt32(0);
+            }
+            if (rdr != null)
+            {
+                rdr.Close();
+            }
+            if (conn != null)
+            {
+                conn.Close();
+            }
+
         }
 
         public static void DeleteAll()
