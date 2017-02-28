@@ -82,10 +82,75 @@ namespace UniversityRegistrar
         Assert.Equal(testStudent, foundStudent);
     }
 
+    [Fact]
+    public void Test_AddCourse_AddsCourseToStudent()
+    {
+      //Arrange
+      Student testStudent = new Student("Jasper", "07/24/2017");
+      testStudent.Save();
+
+      Course testCourse = new Course("Intro to CS");
+      testCourse.Save();
+
+      //Act
+      testStudent.AddCourse(testCourse);
+
+      List<Course> result = testStudent.GetCourses();
+      List<Course> testList = new List<Course>{testCourse};
+
+      //Assert
+      Assert.Equal(testList, result);
+    }
+
+    [Fact]
+    public void Test_GetCourses_ReturnsAllStudentCourses()
+    {
+      //Arrange
+      Student testStudent = new Student("Jasper", "07/24/2017");
+      testStudent.Save();
+
+      Course testCourse1 = new Course("Intro to CS");
+      testCourse1.Save();
+
+      Course testCourse2 = new Course("Accounting");
+      testCourse2.Save();
+
+      //Act
+      testStudent.AddCourse(testCourse1);
+      List<Course> result = testStudent.GetCourses();
+      List<Course> testList = new List<Course> {testCourse1};
+
+      //Assert
+      Assert.Equal(testList, result);
+    }
+
+    [Fact]
+    public void Test_Delete_DeletesStudentAssociationsFromDatabase()
+    {
+      //Arrange
+      Course testCourse = new Course("Intro to CS");
+      testCourse.Save();
+
+      string testName = "Accounting";
+      string testDate = "01/03/2017";
+      Student testStudent = new Student(testName, testDate);
+      testStudent.Save();
+
+      //Act
+      testStudent.AddCourse(testCourse);
+      testStudent.Delete();
+
+      List<Student> resultCourseStudents = testCourse.GetStudents();
+      List<Student> testCourseStudents = new List<Student> {};
+
+      //Assert
+      Assert.Equal(testCourseStudents, resultCourseStudents);
+    }
+
     public void Dispose()
     {
       Student.DeleteAll();
-    //   Course.DeleteAll();
+      Course.DeleteAll();
     }
   }
 }

@@ -153,12 +153,80 @@ namespace UniversityRegistrar
             return foundStudent;
         }
 
+        public void AddCourse(Course newCourse)
+        {
+          SqlConnection conn = DB.Connection();
+          conn.Open();
+
+          SqlCommand cmd = new SqlCommand("INSERT INTO students_courses (student_id, course_id) VALUES (@StudentId, @CourseId);", conn);
+          cmd.Parameters.Add(new SqlParameter("@StudentId", this.GetId()));
+          cmd.Parameters.Add(new SqlParameter("@CourseId", newCourse.GetId()));
+
+          cmd.ExecuteNonQuery();
+
+          if (conn != null)
+          {
+            conn.Close();
+          }
+        }
+
+        public List<Course> GetCourses()
+        {
+          SqlConnection conn = DB.Connection();
+          conn.Open();
+
+          SqlCommand cmd = new SqlCommand("SELECT course_id FROM students_courses WHERE student_id = @StudentId;", conn);
+
+          cmd.Parameters.Add(new SqlParameter("@StudentId", this.GetId()));
+
+          SqlDataReader rdr = cmd.ExecuteReader();
+
+          List<int> courseIds = new List<int> {};
+
+          while (rdr.Read())
+          {
+            int courseId = rdr.GetInt32(0);
+            courseIds.Add(courseId);
+          }
+          if (rdr != null)
+          {
+            rdr.Close();
+          }
+
+          List<Course> courses = new List<Course> {};
+
+          foreach (int courseId in courseIds)
+          {
+            SqlCommand courseQuery = new SqlCommand("SELECT * FROM courses WHERE id = @CourseId;", conn);
+
+            courseQuery.Parameters.Add(new SqlParameter("@CourseId", courseId));
+
+            SqlDataReader queryReader = courseQuery.ExecuteReader();
+            while (queryReader.Read())
+            {
+              int thisCourseId = queryReader.GetInt32(0);
+              string courseName = queryReader.GetString(1);
+              Course foundCourse = new Course(courseName, thisCourseId);
+              courses.Add(foundCourse);
+            }
+            if (queryReader != null)
+            {
+              queryReader.Close();
+            }
+          }
+          if (conn != null)
+          {
+            conn.Close();
+          }
+          return courses;
+        }
+
         public void Delete()
         {
           SqlConnection conn = DB.Connection();
           conn.Open();
 
-          SqlCommand cmd = new SqlCommand("DELETE FROM students WHERE id = @StudentId;", conn);
+          SqlCommand cmd = new SqlCommand("DELETE FROM students WHERE id = @StudentId; DELETE FROM students_courses WHERE student_id = @StudentId;", conn);
 
           cmd.Parameters.Add(new SqlParameter("@StudentId", this.GetId()));
 
