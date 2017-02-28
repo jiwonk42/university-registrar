@@ -26,9 +26,10 @@ namespace UniversityRegistrar
           else
           {
             Student newStudent = (Student) otherStudent;
+            bool idEquality = (this.GetId() == newStudent.GetId());
             bool nameEquality = (this.GetName() == newStudent.GetName());
             bool dateEquality = (this.GetDate() == newStudent.GetDate());
-            return (nameEquality && dateEquality);
+            return (idEquality && nameEquality && dateEquality);
           }
         }
 
@@ -64,7 +65,7 @@ namespace UniversityRegistrar
 
         public static List<Student> GetAll()
         {
-            List<Student> allStudents = new List<Student>{};
+            List<Student> AllStudents = new List<Student>{};
 
             SqlConnection conn = DB.Connection();
             conn.Open();
@@ -78,7 +79,7 @@ namespace UniversityRegistrar
                 string studentName = rdr.GetString(1);
                 string studentDate = rdr.GetString(2);
                 Student newStudent = new Student(studentName, studentDate, studentId);
-                allStudents.Add(newStudent);
+                AllStudents.Add(newStudent);
             }
 
             if (rdr != null)
@@ -89,7 +90,7 @@ namespace UniversityRegistrar
             {
                 conn.Close();
             }
-            return allStudents;
+            return AllStudents;
         }
 
         public void Save()
@@ -150,6 +151,23 @@ namespace UniversityRegistrar
             }
 
             return foundStudent;
+        }
+
+        public void Delete()
+        {
+          SqlConnection conn = DB.Connection();
+          conn.Open();
+
+          SqlCommand cmd = new SqlCommand("DELETE FROM students WHERE id = @StudentId;", conn);
+
+          cmd.Parameters.Add(new SqlParameter("@StudentId", this.GetId()));
+
+          cmd.ExecuteNonQuery();
+
+          if (conn != null)
+          {
+            conn.Close();
+          }
         }
 
         public static void DeleteAll()
