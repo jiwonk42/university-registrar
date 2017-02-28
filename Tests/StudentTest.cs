@@ -36,6 +36,21 @@ namespace UniversityRegistrar
     }
 
     [Fact]
+    public void Test_Save_SavesToDatabase()
+    {
+      //Arrange
+      Student testStudent = new Student("Jasper", "07/24/2017");
+
+      //Act
+      testStudent.Save();
+      List<Student> result = Student.GetAll();
+      List<Student> testList = new List<Student>{testStudent};
+
+      //Assert
+      Assert.Equal(testList, result);
+    }
+
+    [Fact]
     public void Test_Save_AssignsIdToObject()
     {
         //Arrange
