@@ -68,6 +68,20 @@ namespace UniversityRegistrar
         Assert.Equal(testId, result);
     }
 
+    [Fact]
+    public void Test_Find_FindStudentInDatabase()
+    {
+        //Arrange
+        Student testStudent = new Student("Jasper", "07/24/2017");
+        testStudent.Save();
+
+        //Act
+        Student foundStudent = Student.Find(testStudent.GetId());
+
+        //Assert
+        Assert.Equal(testStudent, foundStudent);
+    }
+
     public void Dispose()
     {
       Student.DeleteAll();
