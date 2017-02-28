@@ -10,5 +10,17 @@ namespace UniversityRegistrar
             SqlConnection conn = new SqlConnection(DBConfiguration.ConnectionString);
             return conn;
         }
+
+        // public static SqlConnection Close()
+        // {
+        //     if (rdr != null)
+        //     {
+        //       rdr.Close();
+        //     }
+        //     if (conn != null)
+        //     {
+        //       conn.Close();
+        //     }
+        // }
     }
 }
