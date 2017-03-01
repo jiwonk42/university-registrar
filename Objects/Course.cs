@@ -158,48 +158,71 @@ namespace UniversityRegistrar
       SqlConnection conn = DB.Connection();
       conn.Open();
 
-      SqlCommand cmd = new SqlCommand("SELECT student_id FROM students_courses WHERE course_id = @CourseId;", conn);
-      cmd.Parameters.Add(new SqlParameter("@CourseId", this.GetId()));
+      SqlCommand cmd = new SqlCommand("SELECT students.* FROM courses JOIN students_courses ON (courses.id = students_courses.course_id) JOIN students ON (students_courses.student_id = students.id) WHERE courses.id = @CourseId;", conn);
+    //   SqlCommand cmd = new SqlCommand("SELECT student_id FROM students_courses WHERE course_id = @CourseId;", conn);
+      cmd.Parameters.Add(new SqlParameter("@CourseId", this.GetId().ToString()));
 
       SqlDataReader rdr = cmd.ExecuteReader();
 
-      List<int> studentIds = new List<int> {};
+      List<Student> students = new List<Student>{};
+
       while(rdr.Read())
       {
-        int studentId = rdr.GetInt32(0);
-        studentIds.Add(studentId);
+          int studentId = rdr.GetInt32(0);
+          string studentName = rdr.GetString(1);
+          string studentDate = rdr.GetString(2);
+          Student newStudent = new Student(studentName, studentDate, studentId);
+          students.Add(newStudent);
       }
+
       if (rdr != null)
       {
-        rdr.Close();
-      }
-      List<Student> students = new List<Student> {};
-      foreach (int studentId in studentIds)
-      {
-        SqlCommand studentQuery = new SqlCommand("SELECT * FROM students WHERE id = @StudentId;", conn);
-
-        studentQuery.Parameters.Add(new SqlParameter("@StudentId", studentId));
-
-        SqlDataReader queryReader = studentQuery.ExecuteReader();
-        while(queryReader.Read())
-        {
-              int thisStudentId = queryReader.GetInt32(0);
-              string studentName = queryReader.GetString(1);
-              string studentDate = queryReader.GetString(2);
-              Student foundStudent = new Student(studentName, studentDate, thisStudentId);
-              students.Add(foundStudent);
-        }
-        if (queryReader != null)
-        {
-          queryReader.Close();
-        }
+          rdr.Close();
       }
       if (conn != null)
       {
-        conn.Close();
+          conn.Close();
       }
       return students;
     }
+
+    //   List<int> studentIds = new List<int> {};
+    //   while(rdr.Read())
+    //   {
+    //     int studentId = rdr.GetInt32(0);
+    //     studentIds.Add(studentId);
+    //   }
+    //   if (rdr != null)
+    //   {
+    //     rdr.Close();
+    //   }
+    //   List<Student> students = new List<Student> {};
+    //   foreach (int studentId in studentIds)
+    //   {
+    //     SqlCommand studentQuery = new SqlCommand("SELECT * FROM students WHERE id = @StudentId;", conn);
+      //
+    //     studentQuery.Parameters.Add(new SqlParameter("@StudentId", studentId));
+      //
+    //     SqlDataReader queryReader = studentQuery.ExecuteReader();
+    //     while(queryReader.Read())
+    //     {
+    //           int thisStudentId = queryReader.GetInt32(0);
+    //           string studentName = queryReader.GetString(1);
+    //           string studentDate = queryReader.GetString(2);
+    //           Student foundStudent = new Student(studentName, studentDate, thisStudentId);
+    //           students.Add(foundStudent);
+    //     }
+    //     if (queryReader != null)
+    //     {
+    //       queryReader.Close();
+    //     }
+    //   }
+    //   if (conn != null)
+    //   {
+    //     conn.Close();
+    //   }
+    //   return students;
+    // }
 
     public void Delete()
     {

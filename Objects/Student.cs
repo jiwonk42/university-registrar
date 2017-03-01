@@ -172,53 +172,83 @@ namespace UniversityRegistrar
 
         public List<Course> GetCourses()
         {
-          SqlConnection conn = DB.Connection();
-          conn.Open();
+            SqlConnection conn = DB.Connection();
+            conn.Open();
 
-          SqlCommand cmd = new SqlCommand("SELECT course_id FROM students_courses WHERE student_id = @StudentId;", conn);
+            SqlCommand cmd = new SqlCommand("SELECT courses.* FROM students JOIN students_courses ON (students.id = students_courses.student_id) JOIN courses ON (students_courses.course_id = courses.id) WHERE students.id = @StudentId;", conn);
 
-          cmd.Parameters.Add(new SqlParameter("@StudentId", this.GetId()));
+            cmd.Parameters.Add(new SqlParameter("@StudentId", this.GetId().ToString()));
 
-          SqlDataReader rdr = cmd.ExecuteReader();
+            SqlDataReader rdr = cmd.ExecuteReader();
 
-          List<int> courseIds = new List<int> {};
+            List<Course> courses = new List<Course>{};
 
-          while (rdr.Read())
-          {
-            int courseId = rdr.GetInt32(0);
-            courseIds.Add(courseId);
-          }
-          if (rdr != null)
-          {
-            rdr.Close();
-          }
-
-          List<Course> courses = new List<Course> {};
-
-          foreach (int courseId in courseIds)
-          {
-            SqlCommand courseQuery = new SqlCommand("SELECT * FROM courses WHERE id = @CourseId;", conn);
-
-            courseQuery.Parameters.Add(new SqlParameter("@CourseId", courseId));
-
-            SqlDataReader queryReader = courseQuery.ExecuteReader();
-            while (queryReader.Read())
+            while(rdr.Read())
             {
-              int thisCourseId = queryReader.GetInt32(0);
-              string courseName = queryReader.GetString(1);
-              Course foundCourse = new Course(courseName, thisCourseId);
-              courses.Add(foundCourse);
+                int courseId = rdr.GetInt32(0);
+                string courseName = rdr.GetString(1);
+                Course newCourse = new Course(courseName, courseId);
+                courses.Add(newCourse);
+
             }
-            if (queryReader != null)
+
+            if (rdr != null)
             {
-              queryReader.Close();
+                rdr.Close();
             }
-          }
-          if (conn != null)
-          {
-            conn.Close();
-          }
-          return courses;
+            if (conn != null)
+            {
+                conn.Close();
+            }
+            return courses;
+
+        //   SqlConnection conn = DB.Connection();
+        //   conn.Open();
+          //
+        //   SqlCommand cmd = new SqlCommand("SELECT course_id FROM students_courses WHERE student_id = @StudentId;", conn);
+          //
+        //   cmd.Parameters.Add(new SqlParameter("@StudentId", this.GetId()));
+          //
+        //   SqlDataReader rdr = cmd.ExecuteReader();
+          //
+        //   List<int> courseIds = new List<int> {};
+          //
+        //   while (rdr.Read())
+        //   {
+        //     int courseId = rdr.GetInt32(0);
+        //     courseIds.Add(courseId);
+        //   }
+        //   if (rdr != null)
+        //   {
+        //     rdr.Close();
+        //   }
+          //
+        //   List<Course> courses = new List<Course> {};
+          //
+        //   foreach (int courseId in courseIds)
+        //   {
+        //     SqlCommand courseQuery = new SqlCommand("SELECT * FROM courses WHERE id = @CourseId;", conn);
+          //
+        //     courseQuery.Parameters.Add(new SqlParameter("@CourseId", courseId));
+          //
+        //     SqlDataReader queryReader = courseQuery.ExecuteReader();
+        //     while (queryReader.Read())
+        //     {
+        //       int thisCourseId = queryReader.GetInt32(0);
+        //       string courseName = queryReader.GetString(1);
+        //       Course foundCourse = new Course(courseName, thisCourseId);
+        //       courses.Add(foundCourse);
+        //     }
+        //     if (queryReader != null)
+        //     {
+        //       queryReader.Close();
+        //     }
+        //   }
+        //   if (conn != null)
+        //   {
+        //     conn.Close();
+        //   }
+        //   return courses;
         }
 
         public void Delete()
